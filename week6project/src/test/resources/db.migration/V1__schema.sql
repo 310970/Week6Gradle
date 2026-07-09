@@ -1,9 +1,9 @@
-CREATE TABLE order_statuses (
+CREATE TABLE order_statuses(
     code VARCHAR(20) PRIMARY KEY,
     description VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE retail_orders (
+CREATE TABLE retail_orders(
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     status VARCHAR(20) NOT NULL,
     price BIGINT NOT NULL CHECK (price > 0),
