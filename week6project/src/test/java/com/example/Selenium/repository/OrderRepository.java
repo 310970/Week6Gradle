@@ -85,6 +85,9 @@ public class OrderRepository {
             throw new IllegalStateException("Could not count orders by status", e);
         }
     }
+    public void makeBroke() throws Exception{
+        throw new Exception();
+    }
 
     public int referenceStatusCount() {
         return queryForInt("SELECT COUNT(*) FROM order_statuses");

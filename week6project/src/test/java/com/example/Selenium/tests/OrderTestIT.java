@@ -73,5 +73,9 @@ class OrderTestIT {
         assertEquals(1,repository.count());
         assertEquals(1,repository.countByStatus("REFUNDED"));
     }
+    @Test
+    void makeATestBroken() throws Exception {
+        repository.makeBroke();
+    }
 
 }
