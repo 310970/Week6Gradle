@@ -1,33 +1,69 @@
 name: Test Environment
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 1. Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v5
 
-      - name: 2. Set up Java
+      - name: Set up Java
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '22'
-          cache: 'gradle'
 
-      - name: 3. Start Docker
-        working-directory: week6project
-        run: |
-          docker compose -f src/test/resources/docker/docker-compose.testcontainer.yml down -v
-          docker compose -f src/test/resources/docker/docker-compose.testcontainer.yml up -d --wait
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: 4. Grant execute permission
-        working-directory: week6project
+      - name: Generate Gradle Wrapper
+        working-directory: Week6_Gradle
+        run: gradle wrapper
+
+      - name: Grant execute permission
+        working-directory: Week6_Gradle
         run: chmod +x gradlew
 
+      - name: Run Integration Tests
+        working-directory: Week6_Gradle
+        run: ./gradlew test --tests "com.example.Selenium.tests.OrderTestIT" --no-configuration-cache
 
-      - name: 5. Run Tests
-        working-directory: week6project
-        run: ./gradlew test --tests "com.example.Selenium.tests.OrderTestIT"
+      - name: Checkout gh-pages branch
+        if: always()
+        continue-on-error: true
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Generate Allure Report
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: Week6_Gradle/build/allure-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          allure_history: allure-history
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+
+      - name: Deploy Allure Report
+        if: always()
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: allure-history
+          token: ${{ secrets.GITHUB_TOKEN }}
