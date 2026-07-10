@@ -62,7 +62,7 @@ class OrderTestIT {
         factory.persisted(Orderbuilder.newOrder());
         factory.persisted(Orderbuilder.newOrder().withName("SKU-2").withQuantity(2));
 
-        assertEquals(100,repository.count());
+        assertEquals(2,repository.count());
     }
 
     @Test
