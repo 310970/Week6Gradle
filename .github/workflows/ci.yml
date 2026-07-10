@@ -62,7 +62,7 @@ jobs:
 
       - name: Deploy Allure Report
         if: always()
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           branch: gh-pages
           folder: allure-history
